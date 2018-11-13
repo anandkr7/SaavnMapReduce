@@ -3,11 +3,7 @@ package com.learn.mapreduce;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -24,6 +20,8 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 public class WordCount extends Configured implements Tool {
+
+	private static List<SongDetails> songs = new ArrayList<SongDetails>();
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("Starting the MapReduce program...");
@@ -44,12 +42,17 @@ public class WordCount extends Configured implements Tool {
 				songsMap.put(binData.split("\t")[0], Integer.parseInt(binData.split("\t")[1]));
 			}
 
-			songsMap = sortByValue(songsMap);
+			songsMap = TestAfterMapReduce.sortByValue(songsMap);
 			for (String string : songsMap.keySet()) {
-				System.out.println("Key -- " + string + ", Value - " + songsMap.get(string));
+				SongDetails song = new SongDetails();
+				song.setSongId(string.split("##")[0]);
+				song.setDate(string.split("##")[2]);
+				song.setHour(string.split("##")[1]);
+				songs.add(song);
 			}
+
+			TestAfterMapReduce.findTop100SongsDateWise(songs);
 		} else {
-			System.out.println("Checking..........");
 		}
 	}
 
@@ -76,26 +79,6 @@ public class WordCount extends Configured implements Tool {
 		}
 		return 0;
 
-	}
-
-	// function to sort hashmap by values
-	public static HashMap<String, Integer> sortByValue(Map<String, Integer> songsMap) {
-		// Create a list from elements of HashMap
-		List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(songsMap.entrySet());
-
-		// Sort the list
-		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-			public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
-				return (o1.getValue()).compareTo(o2.getValue());
-			}
-		});
-
-		// put data from sorted list to hashmap
-		HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
-		for (Map.Entry<String, Integer> aa : list) {
-			temp.put(aa.getKey(), aa.getValue());
-		}
-		return temp;
 	}
 
 }

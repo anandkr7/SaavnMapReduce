@@ -1,0 +1,65 @@
+## TO get the Group By SongID with count for 25th songs
+songs = LOAD '/home/anand/Project/Pig/Samples/saavn_sample_data.txt' using PigStorage(',')  as (songId:chararray, userId:chararray, timeStamp:chararray, hour:int, date:chararray);
+songs_25th = filter songs by date == '2017-12-01';
+songs_25th_groupby_songid = group songs_25th by songId;
+songs_25th_groupby_songid_count = FOREACH songs_25th_groupby_songid GENERATE FLATTEN(group) as (songId), COUNT($1);
+songs_25th_groupby_songid_count_ordered = order songs_25th_groupby_songid_count by $1;
+songs_25th_groupby_songid_count_ordered_top_100 = filter songs_25th_groupby_songid_count_ordered by $1 > 10;
+
+
+## TO get the Group By SongID with count for ALL SONGS
+songs = LOAD '/home/anand/Project/Pig/Samples/saavn_sample_data.txt' using PigStorage(',')  as (songId:chararray, userId:chararray, timeStamp:chararray, hour:int, date:chararray);
+songs_groupby_songid_date = group songs by (songId, date);
+songs_groupby_songid_date_count = FOREACH songs_groupby_songid_date GENERATE FLATTEN(group) as (songId, date), COUNT($1);
+songs_groupby_songid_date_count_ordered = order songs_groupby_songid_date_count by $0,$2;
+
+Output - 
+(zzk_wgWc,2017-12-02,1)
+(zzk_wgWc,2017-12-09,2)
+(zzmBM0jH,2017-12-12,2)
+(zzmLg9px,2017-12-11,1)
+(zzmLg9px,2017-12-08,1)
+(zzmLg9px,2017-12-02,1)
+(zzmLg9px,2017-12-14,2)
+(zzmLg9px,2017-12-04,2)
+(zzmLg9px,2017-12-05,2)
+(zzmLg9px,2017-12-10,2)
+(zzmLg9px,2017-12-01,3)
+(zzmLg9px,2017-12-06,6)
+(zzmLg9px,2017-12-09,7)
+(zzmLg9px,2017-12-03,7)
+(zzmLg9px,2017-12-07,12)
+(zzmLg9px,2017-12-12,13)
+
+## Group by songId to get the Distinct song wise Date + COUNT
+
+songs_groupby_songid_date_count_ordered_filtergt100 = filter songs_groupby_songid_date_count_ordered by $2 > 100 and $1 == '2017-12-25';
+songs_groupby_songid_date_count_ordered_groupby_songId = group songs_groupby_songid_date_count_ordered_filtergt100 by $0;
+
+
+#### Check the trend of the Songs "hhOmGIls"
+songs = LOAD '/home/anand/Project/Pig/Samples/saavn_sample_data.txt' using PigStorage(',')  as (songId:chararray, userId:chararray, timeStamp:chararray, hour:int, date:chararray);
+songs_1st = filter songs by date == '2017-12-01' and songId == 'hhOmGIls';
+songs_1st_groupby_hour = group songs_1st by hour;
+songs_25th_groupby_hour_count = FOREACH songs_1st_groupby_hour GENERATE FLATTEN(group) as (hour), COUNT($1);
+
+Output - 
+(7,3)
+(8,1)
+(10,10)
+(11,4)
+(15,5191)
+(16,4538)
+
+#### Check the trend of the Songs "hhOmGIls"
+songs = LOAD '/home/anand/Project/Pig/Samples/saavn_sample_data.txt' using PigStorage(',')  as (songId:chararray, userId:chararray, timeStamp:chararray, hour:int, date:chararray);
+songs_1st = filter songs by date == '2017-12-02' and songId == 'hhOmGIls';
+songs_1st_groupby_hour = group songs_1st by hour;
+songs_1st_groupby_hour_count = FOREACH songs_1st_groupby_hour GENERATE FLATTEN(group) as (hour), COUNT($1);
+
+
+#### IN LINODE - Check the trend of the Songs "1uVZjWMu"
+songs = LOAD '/root/Pig/saavn_sample_data.txt' using PigStorage(',')  as (songId:chararray, userId:chararray, timeStamp:chararray, hour:int, date:chararray);
+songs_1st = filter songs by date == '2017-12-02' and songId == '1uVZjWMu';
+songs_1st_groupby_hour = group songs_1st by hour;
+songs_1st_groupby_hour_count = FOREACH songs_1st_groupby_hour GENERATE FLATTEN(group) as (hour), COUNT($1);

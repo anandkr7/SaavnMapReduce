@@ -18,27 +18,31 @@ public class TestAfterMapReduce {
 		Map<String, List<SongDetails>> dateWiseSongList = new LinkedHashMap<String, List<SongDetails>>();
 
 		for (SongDetails songDetails : songsList) {
-			if (dateWiseSongList.containsKey(songDetails.getDate())) {
-				List<SongDetails> songList = dateWiseSongList.get(songDetails.getDate());
-				if (songList != null) {
-					songList.add(songDetails);
-					dateWiseSongList.put(songDetails.getDate(), songList);
+			if (songDetails.getPlayed() > 100) {
+				if (dateWiseSongList.containsKey(songDetails.getDate())) {
+					List<SongDetails> songList = dateWiseSongList.get(songDetails.getDate());
+					if (songList != null) {
+						songList.add(songDetails);
+						dateWiseSongList.put(songDetails.getDate(), songList);
+					} else {
+						List<SongDetails> newSongList = new ArrayList<SongDetails>();
+						newSongList.add(songDetails);
+						dateWiseSongList.put(songDetails.getDate(), newSongList);
+					}
 				} else {
 					List<SongDetails> newSongList = new ArrayList<SongDetails>();
 					newSongList.add(songDetails);
 					dateWiseSongList.put(songDetails.getDate(), newSongList);
 				}
-			} else {
-				List<SongDetails> newSongList = new ArrayList<SongDetails>();
-				newSongList.add(songDetails);
-				dateWiseSongList.put(songDetails.getDate(), newSongList);
 			}
 		}
 
 		try {
-			/*BufferedWriter writer = new BufferedWriter(
-					new FileWriter("E:\\Project\\SaavnMapReduce\\output2\\finalOut.txt"));*/
-			//1
+			/*
+			 * BufferedWriter writer = new BufferedWriter( new
+			 * FileWriter("E:\\Project\\SaavnMapReduce\\output2\\finalOut.txt"));
+			 */
+			// 1
 			BufferedWriter writer = new BufferedWriter(
 					new FileWriter("/home/anand/Project/Pig/Saavn/Out1/finalOut.txt"));
 			for (String dateStr : dateWiseSongList.keySet()) {
@@ -63,8 +67,9 @@ public class TestAfterMapReduce {
 
 				songsCountMap = sortByValue(songsCountMap);
 				for (String songDetails : songsCountMap.keySet()) {
-					if(songsCountMap.get(songDetails) > 1)
-						writer.write(dateStr + "---" + songDetails + ", Count - " + songsCountMap.get(songDetails) + "\n");
+					if (songsCountMap.get(songDetails) > 1)
+						writer.write(
+								dateStr + "---" + songDetails + ", Count - " + songsCountMap.get(songDetails) + "\n");
 				}
 			}
 			writer.close();

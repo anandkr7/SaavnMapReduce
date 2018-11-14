@@ -26,20 +26,21 @@ public class WordCount extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Starting the MapReduce program...");
 		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);
+		//int returnStatus = 0;
 		if (returnStatus == 0) {
 			System.out.println("Exitting");
 			FileHandler fileHandler = new FileHandler();
-			File file = fileHandler.getFileFromExternalPath("/home/anand/Programs/Cloudera/output5/part-r-00000");
+			File file = fileHandler.getFileFromExternalPath("E:\\Project\\SaavnMapReduce\\output2\\part-r-00000");
 
 			@SuppressWarnings("resource")
 			Scanner scanner = new Scanner(file);
-			List<String> latestBinsDataList = new ArrayList<String>();
 			Map<String, Integer> songsMap = new HashMap<String, Integer>();
 
 			while (scanner.hasNext()) {
-				String binData = scanner.nextLine();
-				latestBinsDataList.add(binData);
-				songsMap.put(binData.split("\t")[0], Integer.parseInt(binData.split("\t")[1]));
+				String songData = scanner.nextLine();
+				if(songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
+					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
+				}
 			}
 
 			songsMap = TestAfterMapReduce.sortByValue(songsMap);
@@ -48,6 +49,7 @@ public class WordCount extends Configured implements Tool {
 				song.setSongId(string.split("##")[0]);
 				song.setDate(string.split("##")[2]);
 				song.setHour(string.split("##")[1]);
+				song.setPlayed(songsMap.get(string));
 				songs.add(song);
 			}
 

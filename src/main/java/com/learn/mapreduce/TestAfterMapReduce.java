@@ -37,7 +37,7 @@ public class TestAfterMapReduce {
 
 		try {
 			BufferedWriter writer = new BufferedWriter(
-					new FileWriter("/home/anand/Programs/Cloudera/output5/finalOut.txt"));
+					new FileWriter("E:\\Project\\SaavnMapReduce\\output2\\finalOut.txt"));
 			for (String dateStr : dateWiseSongList.keySet()) {
 				System.out.println("Date -- " + dateStr);
 				List<SongDetails> songs = dateWiseSongList.get(dateStr);

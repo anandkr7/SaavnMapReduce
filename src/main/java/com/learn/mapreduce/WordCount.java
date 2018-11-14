@@ -25,16 +25,16 @@ public class WordCount extends Configured implements Tool {
 
 	public static void startWordCount(String[] args) throws Exception {
 		
-		System.out.println("Starting the MapReduce program...");
-		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);
-		// int returnStatus = 0;
+		/*System.out.println("Starting the MapReduce program...");
+		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);*/
+		int returnStatus = 0;
 		if (returnStatus == 0) {
 			
-			System.out.println("Exitting");
+			System.out.println("Starting the Counting process...");
 			FileHandler fileHandler = new FileHandler();
-			// File file =
-			// fileHandler.getFileFromExternalPath("E:\\Project\\SaavnMapReduce\\output2\\part-r-00000");
-			File file = fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
+			File file =
+			fileHandler.getFileFromExternalPath("E:\\Project\\Saavn_Files\\converted_44gb\\mapreduce_output_44gb.txt");
+			//File file = fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
 
 			@SuppressWarnings("resource")
 			Scanner scanner = new Scanner(file);
@@ -47,6 +47,7 @@ public class WordCount extends Configured implements Tool {
 				}
 			}
 
+			System.out.println("Creating the Song objects...");
 			songsMap = TestAfterMapReduce.sortByValue(songsMap);
 			for (String string : songsMap.keySet()) {
 				SongDetails song = new SongDetails();
@@ -57,6 +58,7 @@ public class WordCount extends Configured implements Tool {
 				songs.add(song);
 			}
 
+			System.out.println("Start finding the Song objects...");
 			TestAfterMapReduce.findTop100SongsDateWise(songs);
 		} else {
 		}

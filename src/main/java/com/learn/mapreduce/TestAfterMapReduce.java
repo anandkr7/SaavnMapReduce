@@ -16,9 +16,11 @@ public class TestAfterMapReduce {
 	static void findTop100SongsDateWise(List<SongDetails> songsList) {
 
 		Map<String, List<SongDetails>> dateWiseSongList = new LinkedHashMap<String, List<SongDetails>>();
-
+		System.out.println("Creating the Datewise map...");
+		
 		for (SongDetails songDetails : songsList) {
 			if (songDetails.getPlayed() > 100) {
+				System.out.println("Song - " + songDetails);
 				if (dateWiseSongList.containsKey(songDetails.getDate())) {
 					List<SongDetails> songList = dateWiseSongList.get(songDetails.getDate());
 					if (songList != null) {
@@ -37,14 +39,14 @@ public class TestAfterMapReduce {
 			}
 		}
 
+		System.out.println("Created the Datewise map...");
 		try {
-			/*
-			 * BufferedWriter writer = new BufferedWriter( new
-			 * FileWriter("E:\\Project\\SaavnMapReduce\\output2\\finalOut.txt"));
-			 */
-			// 1
-			BufferedWriter writer = new BufferedWriter(
-					new FileWriter("/home/anand/Project/Pig/Saavn/Out1/finalOut.txt"));
+			
+			  BufferedWriter writer = new BufferedWriter( new
+			  FileWriter("E:\\Project\\SaavnMapReduce\\Out\\FinalOut44Gb.txt"));
+			 
+			//BufferedWriter writer = new BufferedWriter(
+				//	new FileWriter("/home/anand/Project/Pig/Saavn/Out1/finalOut.txt"));
 			for (String dateStr : dateWiseSongList.keySet()) {
 				System.out.println("Date -- " + dateStr);
 				List<SongDetails> songs = dateWiseSongList.get(dateStr);
@@ -68,6 +70,7 @@ public class TestAfterMapReduce {
 				songsCountMap = sortByValue(songsCountMap);
 				for (String songDetails : songsCountMap.keySet()) {
 					if (songsCountMap.get(songDetails) > 1)
+						System.out.println("Writing the Datewise map to file - " + dateStr);
 						writer.write(
 								dateStr + "---" + songDetails + ", Count - " + songsCountMap.get(songDetails) + "\n");
 				}

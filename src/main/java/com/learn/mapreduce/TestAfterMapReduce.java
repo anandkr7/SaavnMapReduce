@@ -36,8 +36,11 @@ public class TestAfterMapReduce {
 		}
 
 		try {
+			/*BufferedWriter writer = new BufferedWriter(
+					new FileWriter("E:\\Project\\SaavnMapReduce\\output2\\finalOut.txt"));*/
+			//1
 			BufferedWriter writer = new BufferedWriter(
-					new FileWriter("E:\\Project\\SaavnMapReduce\\output2\\finalOut.txt"));
+					new FileWriter("/home/anand/Project/Pig/Saavn/Out1/finalOut.txt"));
 			for (String dateStr : dateWiseSongList.keySet()) {
 				System.out.println("Date -- " + dateStr);
 				List<SongDetails> songs = dateWiseSongList.get(dateStr);

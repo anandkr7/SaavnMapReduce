@@ -23,14 +23,18 @@ public class WordCount extends Configured implements Tool {
 
 	private static List<SongDetails> songs = new ArrayList<SongDetails>();
 
-	public static void main(String[] args) throws Exception {
+	public static void startWordCount(String[] args) throws Exception {
+		
 		System.out.println("Starting the MapReduce program...");
 		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);
-		//int returnStatus = 0;
+		// int returnStatus = 0;
 		if (returnStatus == 0) {
+			
 			System.out.println("Exitting");
 			FileHandler fileHandler = new FileHandler();
-			File file = fileHandler.getFileFromExternalPath("E:\\Project\\SaavnMapReduce\\output2\\part-r-00000");
+			// File file =
+			// fileHandler.getFileFromExternalPath("E:\\Project\\SaavnMapReduce\\output2\\part-r-00000");
+			File file = fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
 
 			@SuppressWarnings("resource")
 			Scanner scanner = new Scanner(file);
@@ -38,7 +42,7 @@ public class WordCount extends Configured implements Tool {
 
 			while (scanner.hasNext()) {
 				String songData = scanner.nextLine();
-				if(songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
+				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
 					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
 				}
 			}

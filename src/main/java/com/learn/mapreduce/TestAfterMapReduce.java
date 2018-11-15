@@ -13,11 +13,12 @@ import java.util.Map;
 
 public class TestAfterMapReduce {
 
-	static void findTop100SongsDateWise(List<SongDetails> songsList) {
+	static Map<String, List<SongDetails>> findTop100SongsDateWise(List<SongDetails> songsList) {
 
 		Map<String, List<SongDetails>> dateWiseSongList = new LinkedHashMap<String, List<SongDetails>>();
+		Map<String, String> dateWiseSongWithCount = new LinkedHashMap<String, String>();
 		System.out.println("Creating the Datewise map...");
-		
+
 		for (SongDetails songDetails : songsList) {
 			if (songDetails.getPlayed() > 100) {
 				System.out.println("Song - " + songDetails);
@@ -41,12 +42,11 @@ public class TestAfterMapReduce {
 
 		System.out.println("Created the Datewise map...");
 		try {
-			
-			  BufferedWriter writer = new BufferedWriter( new
-			  FileWriter("E:\\Project\\SaavnMapReduce\\Out\\FinalOut44Gb.txt"));
-			 
-			//BufferedWriter writer = new BufferedWriter(
-				//	new FileWriter("/home/anand/Project/Pig/Saavn/Out1/finalOut.txt"));
+
+			BufferedWriter writer = new BufferedWriter(new FileWriter("/home/anand/Project/Pig/FinalOut44Gb.txt"));
+
+			// BufferedWriter writer = new BufferedWriter(
+			// new FileWriter("/home/anand/Project/Pig/Saavn/Out1/finalOut.txt"));
 			for (String dateStr : dateWiseSongList.keySet()) {
 				System.out.println("Date -- " + dateStr);
 				List<SongDetails> songs = dateWiseSongList.get(dateStr);
@@ -71,15 +71,15 @@ public class TestAfterMapReduce {
 				for (String songDetails : songsCountMap.keySet()) {
 					if (songsCountMap.get(songDetails) > 1)
 						System.out.println("Writing the Datewise map to file - " + dateStr);
-						writer.write(
-								dateStr + "---" + songDetails + ", Count - " + songsCountMap.get(songDetails) + "\n");
+					writer.write(dateStr + "---" + songDetails + ", Count - " + songsCountMap.get(songDetails) + "\n");
+					dateWiseSongWithCount.put(dateStr, songDetails + "#" + songsCountMap.get(songDetails));
 				}
 			}
 			writer.close();
 		} catch (Exception ex) {
 
 		}
-
+		return dateWiseSongList;
 	}
 
 	// function to sort hashmap by values

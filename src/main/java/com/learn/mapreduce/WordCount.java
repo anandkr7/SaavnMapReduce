@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -17,24 +16,26 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
 
 public class WordCount extends Configured implements Tool {
 
 	private static List<SongDetails> songs = new ArrayList<SongDetails>();
 
-	public static void startWordCount(String[] args) throws Exception {
-		
-		/*System.out.println("Starting the MapReduce program...");
-		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);*/
+	public static Map<String, List<SongDetails>> startWordCount(String[] args) throws Exception {
+
+		/*
+		 * System.out.println("Starting the MapReduce program..."); int returnStatus =
+		 * ToolRunner.run(new Configuration(), new WordCount(), args);
+		 */
 		int returnStatus = 0;
 		if (returnStatus == 0) {
-			
+
 			System.out.println("Starting the Counting process...");
 			FileHandler fileHandler = new FileHandler();
-			File file =
-			fileHandler.getFileFromExternalPath("E:\\Project\\Saavn_Files\\converted_44gb\\mapreduce_output_44gb.txt");
-			//File file = fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
+			File file = fileHandler
+					.getFileFromExternalPath("/home/anand/Project/Pig/mapreduce_output_songdate_44gb.txt");
+			// File file =
+			// fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
 
 			@SuppressWarnings("resource")
 			Scanner scanner = new Scanner(file);
@@ -51,17 +52,18 @@ public class WordCount extends Configured implements Tool {
 			songsMap = TestAfterMapReduce.sortByValue(songsMap);
 			for (String string : songsMap.keySet()) {
 				SongDetails song = new SongDetails();
-				song.setSongId(string.split("##")[0]);
-				song.setDate(string.split("##")[2]);
-				song.setHour(string.split("##")[1]);
+				song.setSongId(string.split("#")[0]);
+				song.setDate(string.split("#")[1]);
+				// song.setHour(string.split("##")[1]);
 				song.setPlayed(songsMap.get(string));
 				songs.add(song);
 			}
 
 			System.out.println("Start finding the Song objects...");
-			TestAfterMapReduce.findTop100SongsDateWise(songs);
+			return TestAfterMapReduce.findTop100SongsDateWise(songs);
 		} else {
 		}
+		return null;
 	}
 
 	public int run(String[] args) throws IOException {

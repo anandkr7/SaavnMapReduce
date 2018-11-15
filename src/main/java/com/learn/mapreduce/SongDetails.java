@@ -6,7 +6,7 @@ public class SongDetails {
 	private String date;
 	private String hour;
 	private int played;
-	private float zScore;
+	private double zScore;
 
 	public String getSongId() {
 		return songId;
@@ -45,11 +45,11 @@ public class SongDetails {
 		return "SongDetails [songId=" + songId + ", date=" + date + ", hour=" + hour + ", played=" + played + "]";
 	}
 
-	public float getzScore() {
+	public double getzScore() {
 		return zScore;
 	}
 
-	public void setzScore(float zScore) {
+	public void setzScore(double zScore) {
 		this.zScore = zScore;
 	}
 

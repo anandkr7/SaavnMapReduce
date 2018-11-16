@@ -9,7 +9,7 @@ public class WordCountApp {
 
 	public static void main(String[] args) throws Exception {
 
-		System.out.println("Starting the MapReduce program...");
+		long t1 = System.currentTimeMillis();
 		Map<String, List<SongDetails>> dateWiseSongWithCount = WordCount.startWordCount(args);
 
 		Map<String, Double> result = TopSongsGenerator.generateTopHundredSongs(dateWiseSongWithCount);
@@ -25,6 +25,8 @@ public class WordCountApp {
 			}
 		}
 		writer.close();
+		
+		System.out.println("TIME TO COMPLETE - " + (System.currentTimeMillis() - t1)/1000);
 	}
 
 }

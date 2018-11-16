@@ -2,30 +2,36 @@ package com.learn.mapreduce;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TopSongsGenerator {
 
-	public static Map<String, String> generateTopHundredSongs(Map<String, List<SongDetails>> dateWiseSongWithCount) {
+	public static Map<String, Double> generateTopHundredSongs(Map<String, List<SongDetails>> dateWiseSongWithCount) {
 
 		System.out.println("Starting the generateTopHundredSongs process...");
 
 		Map<String, Integer> dateWiseMeanValue = new HashMap<String, Integer>();
 		dateWiseMeanValue = getMeanValueForDate(dateWiseSongWithCount);
-		for (String dateStr : dateWiseMeanValue.keySet()) {
-			System.out.println("Date - " + dateStr + " Mean - " + dateWiseMeanValue.get(dateStr));
-		}
 
 		Map<String, Double> dateWiseSDValue = new HashMap<String, Double>();
 		dateWiseSDValue = getSDValueForDate(dateWiseSongWithCount, dateWiseMeanValue);
-		for (String dateStr : dateWiseSDValue.keySet()) {
-			System.out.println("Date - " + dateStr + " SD - " + dateWiseSDValue.get(dateStr));
+
+		Map<String, List<SongDetails>> dateWiseSongWithZScore = calculateZScoreFor(dateWiseSongWithCount,
+				dateWiseMeanValue, dateWiseSDValue);
+		Map<String, Double> result = new LinkedHashMap<String, Double>();
+		for (String dateStr : dateWiseSongWithZScore.keySet()) {
+			List<SongDetails> songs = dateWiseSongWithZScore.get(dateStr);
+			List<SongDetails> topHundredSongs = songs.subList(songs.size() - 101, songs.size() - 1);
+			Collections.reverse(topHundredSongs);
+			for (SongDetails songDetails : topHundredSongs) {
+				result.put(dateStr + "#" + songDetails.getSongId(), songDetails.getzScore());
+			}
 		}
-		
-		calculateZScoreFor(dateWiseSongWithCount, dateWiseMeanValue, dateWiseSDValue);
-		return null;
+		return result;
 	}
 
 	public static Map<String, Integer> getMeanValueForDate(Map<String, List<SongDetails>> dateWiseSongWithCount) {
@@ -59,17 +65,12 @@ public class TopSongsGenerator {
 			for (SongDetails songDetails : songs) {
 
 				Integer mean = dateWiseMeanValue.get(dateStr);
-				// System.out.println("Mean -- " + mean);
 				Integer val = (songDetails.getPlayed() - mean);
 
 				BigInteger valSquare = BigInteger.valueOf(val * val);
 				totalSquareValue = totalSquareValue.add(valSquare);
-				// System.out.println("Song Id - " + songDetails.getSongId() +", Current Val --
-				// " + val + " Square Val -- " + valSquare);
-				// System.out.println("Incremental Val -- " + totalSquareValue);
 			}
 
-			// System.out.println("Total Val -- " + totalSquareValue);
 			BigInteger dividedVal = totalSquareValue.divide(BigInteger.valueOf(noOfSongs - 1));
 			BigInteger temp = new BigInteger(sqrt(dividedVal).toString());
 			dateSDMeanValue.put(dateStr, temp.doubleValue());
@@ -78,12 +79,12 @@ public class TopSongsGenerator {
 		return dateSDMeanValue;
 	}
 
-	public static Map<String, List<SongDetails>> calculateZScoreFor(Map<String, List<SongDetails>> dateWiseSongWithCount,
-			Map<String, Integer> dateWiseMeanValue, Map<String, Double> dateSDMeanValue) {
+	public static Map<String, List<SongDetails>> calculateZScoreFor(
+			Map<String, List<SongDetails>> dateWiseSongWithCount, Map<String, Integer> dateWiseMeanValue,
+			Map<String, Double> dateSDMeanValue) {
 
 		Map<String, List<SongDetails>> updatedDateWiseSongWithCount = new HashMap<String, List<SongDetails>>();
 		for (String dateStr : dateWiseSongWithCount.keySet()) {
-			System.out.println("\n\nDATE -- " + dateStr);
 			List<SongDetails> songs = dateWiseSongWithCount.get(dateStr);
 			List<SongDetails> upDatedSongs = new ArrayList<SongDetails>();
 			for (SongDetails songDetails : songs) {
@@ -92,10 +93,11 @@ public class TopSongsGenerator {
 				int palyed = songDetails.getPlayed();
 
 				double zs = (Integer.valueOf(palyed) - mean) / sd;
-				System.out.println("SongId - " + songDetails.getSongId() + " Zscore - " + zs);
 				songDetails.setzScore(zs);
 				upDatedSongs.add(songDetails);
+
 			}
+			updatedDateWiseSongWithCount.put(dateStr, upDatedSongs);
 		}
 
 		return updatedDateWiseSongWithCount;

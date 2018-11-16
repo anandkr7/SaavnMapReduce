@@ -33,7 +33,7 @@ public class WordCount extends Configured implements Tool {
 			System.out.println("Starting the Counting process...");
 			FileHandler fileHandler = new FileHandler();
 			File file = fileHandler
-					.getFileFromExternalPath("/home/anand/Project/Pig/mapreduce_output_songdate_44gb.txt");
+					.getFileFromExternalPath("E:\\Project\\Saavn_Files\\converted_44gb\\mapreduce_output_songdate_44gb.txt");
 			// File file =
 			// fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
 
@@ -54,7 +54,6 @@ public class WordCount extends Configured implements Tool {
 				SongDetails song = new SongDetails();
 				song.setSongId(string.split("#")[0]);
 				song.setDate(string.split("#")[1]);
-				// song.setHour(string.split("##")[1]);
 				song.setPlayed(songsMap.get(string));
 				songs.add(song);
 			}

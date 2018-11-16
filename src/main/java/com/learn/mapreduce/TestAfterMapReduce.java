@@ -1,7 +1,5 @@
 package com.learn.mapreduce;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,12 +14,10 @@ public class TestAfterMapReduce {
 	static Map<String, List<SongDetails>> findTop100SongsDateWise(List<SongDetails> songsList) {
 
 		Map<String, List<SongDetails>> dateWiseSongList = new LinkedHashMap<String, List<SongDetails>>();
-		Map<String, String> dateWiseSongWithCount = new LinkedHashMap<String, String>();
 		System.out.println("Creating the Datewise map...");
 
 		for (SongDetails songDetails : songsList) {
 			if (songDetails.getPlayed() > 100) {
-				System.out.println("Song - " + songDetails);
 				if (dateWiseSongList.containsKey(songDetails.getDate())) {
 					List<SongDetails> songList = dateWiseSongList.get(songDetails.getDate());
 					if (songList != null) {
@@ -38,46 +34,6 @@ public class TestAfterMapReduce {
 					dateWiseSongList.put(songDetails.getDate(), newSongList);
 				}
 			}
-		}
-
-		System.out.println("Created the Datewise map...");
-		try {
-
-			BufferedWriter writer = new BufferedWriter(new FileWriter("/home/anand/Project/Pig/FinalOut44Gb.txt"));
-
-			// BufferedWriter writer = new BufferedWriter(
-			// new FileWriter("/home/anand/Project/Pig/Saavn/Out1/finalOut.txt"));
-			for (String dateStr : dateWiseSongList.keySet()) {
-				System.out.println("Date -- " + dateStr);
-				List<SongDetails> songs = dateWiseSongList.get(dateStr);
-				Map<String, Integer> songsCountMap = new HashMap<String, Integer>();
-				for (SongDetails songDetails : songs) {
-					if (songsCountMap.containsKey(songDetails.getSongId())) {
-						Integer count = songsCountMap.get(songDetails.getSongId());
-						if (count != null) {
-							count += songDetails.getPlayed();
-							songsCountMap.put(songDetails.getSongId(), count);
-						} else {
-							count = songDetails.getPlayed();
-							songsCountMap.put(songDetails.getSongId(), count);
-						}
-					} else {
-						Integer count = songDetails.getPlayed();
-						songsCountMap.put(songDetails.getSongId(), count);
-					}
-				}
-
-				songsCountMap = sortByValue(songsCountMap);
-				for (String songDetails : songsCountMap.keySet()) {
-					if (songsCountMap.get(songDetails) > 1)
-						System.out.println("Writing the Datewise map to file - " + dateStr);
-					writer.write(dateStr + "---" + songDetails + ", Count - " + songsCountMap.get(songDetails) + "\n");
-					dateWiseSongWithCount.put(dateStr, songDetails + "#" + songsCountMap.get(songDetails));
-				}
-			}
-			writer.close();
-		} catch (Exception ex) {
-
 		}
 		return dateWiseSongList;
 	}

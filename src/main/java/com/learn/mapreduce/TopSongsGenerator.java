@@ -25,7 +25,12 @@ public class TopSongsGenerator {
 		Map<String, Double> result = new LinkedHashMap<String, Double>();
 		for (String dateStr : dateWiseSongWithZScore.keySet()) {
 			List<SongDetails> songs = dateWiseSongWithZScore.get(dateStr);
-			List<SongDetails> topHundredSongs = songs.subList(songs.size() - 101, songs.size() - 1);
+			List<SongDetails> topHundredSongs = null;
+			if(songs.size() > 100){
+				topHundredSongs = songs.subList(songs.size() - 101, songs.size() - 1);
+			} else {
+				topHundredSongs = songs;
+			}
 			Collections.reverse(topHundredSongs);
 			for (SongDetails songDetails : topHundredSongs) {
 				result.put(dateStr + "#" + songDetails.getSongId(), songDetails.getzScore());

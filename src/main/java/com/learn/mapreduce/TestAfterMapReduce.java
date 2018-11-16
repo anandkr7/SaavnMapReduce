@@ -17,7 +17,7 @@ public class TestAfterMapReduce {
 		System.out.println("Creating the Datewise map...");
 
 		for (SongDetails songDetails : songsList) {
-			if (songDetails.getPlayed() > 100) {
+			if (songDetails.getPlayed() > 0) {
 				if (dateWiseSongList.containsKey(songDetails.getDate())) {
 					List<SongDetails> songList = dateWiseSongList.get(songDetails.getDate());
 					if (songList != null) {

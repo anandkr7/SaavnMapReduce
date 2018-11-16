@@ -19,6 +19,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
+import com.learn.mapreduce.TestAfterMapReduce;
 
 public class WordCount extends Configured implements Tool {
 
@@ -35,15 +36,22 @@ public class WordCount extends Configured implements Tool {
 
 			logger.info("Starting the Counting process...");
 			FileHandler fileHandler = new FileHandler();
-			File file = fileHandler.getFileFromExternalPath(
-					"E:\\Project\\Saavn_Files\\converted_44gb\\mapreduce_output_songdate_44gb.txt");
+			File file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00000");
 			// File file =
 			// fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
 
 			@SuppressWarnings("resource")
-			Scanner scanner = new Scanner(file);
 			Map<String, Integer> songsMap = new HashMap<String, Integer>();
+			Scanner scanner = new Scanner(file);
+			while (scanner.hasNext()) {
+				String songData = scanner.nextLine();
+				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
+					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
+				}
+			}
 
+			file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00001");
+			scanner = new Scanner(file);
 			while (scanner.hasNext()) {
 				String songData = scanner.nextLine();
 				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
@@ -78,7 +86,7 @@ public class WordCount extends Configured implements Tool {
 		job.setMapperClass(WordCountMapper.class);
 		job.setPartitionerClass(SongDataPartitioner.class);
 		job.setReducerClass(WordCountReducer.class);
-		job.setNumReduceTasks(10);
+		job.setNumReduceTasks(2);
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));

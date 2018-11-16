@@ -13,37 +13,19 @@ public class SongDataPartitioner extends Partitioner<Text, IntWritable> {
 	public int getPartition(Text key, IntWritable value, int numReduceTasks) {
 		String[] str = key.toString().split("#");
 		String date = str[1];
-
+		int partition = 0;
 		try {
 			String dayStr = date.substring(8, 10);
 			int day = Integer.parseInt(dayStr);
-			logger.info("Partition Key - " + day);
-			
-			if (day < 25) {
-				return 1;
-			}
-			if (day == 25) {
-				return 2;
-			} else if (day == 26) {
-				return 3;
-			} else if (day == 27) {
-				return 4;
-			} else if (day == 28) {
-				return 5;
-			} else if (day == 29) {
-				return 6;
-			} else if (day == 30) {
-				return 7;
-			} else if (day == 31) {
-				return 8;
-			}
-
-			
-		} catch (Exception ex) {
-			return 1;
-		}
+			if (day < 25)
+				partition = 0;
+			 else 
+				partition = 1;
 		
-		return numReduceTasks;
+		} catch (Exception ex) {
+			return 0;
+		}
+		return partition;
 	}
 
 	public static void main(String[] args) {

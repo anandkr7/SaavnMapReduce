@@ -14,7 +14,7 @@ public class WordCountApp {
 
 		Map<String, Double> result = TopSongsGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		BufferedWriter writer = new BufferedWriter(
-				new FileWriter("E:\\Project\\Saavn_Files\\result\\FinalOut44Gb.txt"));
+				new FileWriter(args[1] + "FinalOut44Gb.txt"));
 		int index = 0;
 		for (String dateSong : result.keySet()) {
 			index++;
@@ -25,7 +25,6 @@ public class WordCountApp {
 			}
 		}
 		writer.close();
-		
 		System.out.println("TIME TO COMPLETE - " + (System.currentTimeMillis() - t1)/1000);
 	}
 

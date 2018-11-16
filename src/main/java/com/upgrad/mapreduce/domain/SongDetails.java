@@ -1,4 +1,4 @@
-package com.learn.mapreduce;
+package com.upgrad.mapreduce.domain;
 
 public class SongDetails {
 

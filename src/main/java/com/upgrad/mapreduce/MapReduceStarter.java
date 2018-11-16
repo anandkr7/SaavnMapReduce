@@ -1,19 +1,18 @@
-package com.learn.mapreduce;
+package com.upgrad.mapreduce;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 
-import com.upgrad.mapreduce.TopSongsGenerator;
 import com.upgrad.mapreduce.domain.SongDetails;
 
-public class WordCountApp {
+public class MapReduceStarter {
 
 	public static void main(String[] args) throws Exception {
 
 		long t1 = System.currentTimeMillis();
-		Map<String, List<SongDetails>> dateWiseSongWithCount = WordCount.startWordCount(args);
+		Map<String, List<SongDetails>> dateWiseSongWithCount = MapReduceDriver.startWordCount(args);
 
 		Map<String, Double> result = TopSongsGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		BufferedWriter writer = new BufferedWriter(

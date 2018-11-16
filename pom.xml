@@ -58,7 +58,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>com.learn.mapreduce.WordCountApp</mainClass>
+							<mainClass>com.upgrad.mapreduce.MapReduceStarter</mainClass>
 							<classpathPrefix>dependency-jars/</classpathPrefix>
 						</manifest>
 					</archive>

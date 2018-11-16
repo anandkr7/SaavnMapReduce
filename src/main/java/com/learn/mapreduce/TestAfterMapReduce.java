@@ -9,9 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.upgrad.mapreduce.domain.SongDetails;
+
 public class TestAfterMapReduce {
 
-	static Map<String, List<SongDetails>> findTop100SongsDateWise(List<SongDetails> songsList) {
+	public static Map<String, List<SongDetails>> findTop100SongsDateWise(List<SongDetails> songsList) {
 
 		Map<String, List<SongDetails>> dateWiseSongList = new LinkedHashMap<String, List<SongDetails>>();
 		System.out.println("Creating the Datewise map...");

@@ -1,4 +1,4 @@
-package com.learn.mapreduce;
+package com.upgrad.mapreduce;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

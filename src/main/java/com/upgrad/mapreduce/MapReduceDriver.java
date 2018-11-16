@@ -1,4 +1,4 @@
-package com.learn.mapreduce;
+package com.upgrad.mapreduce;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,20 +19,20 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
+
 import com.learn.mapreduce.TestAfterMapReduce;
-import com.upgrad.mapreduce.SongDataPartitioner;
 import com.upgrad.mapreduce.domain.SongDetails;
 import com.upgrad.mapreduce.util.FileHandler;
 
-public class WordCount extends Configured implements Tool {
+public class MapReduceDriver extends Configured implements Tool {
 
 	private static List<SongDetails> songs = new ArrayList<SongDetails>();
-    private static Logger logger = Logger.getLogger(WordCount.class);
+    private static Logger logger = Logger.getLogger(MapReduceDriver.class);
 
 	public static Map<String, List<SongDetails>> startWordCount(String[] args) throws Exception {
 
 		logger.info("Starting the MapReduce program...");
-		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);
+		int returnStatus = ToolRunner.run(new Configuration(), new MapReduceDriver(), args);
 
 		//		int returnStatus = 0;
 		if (returnStatus == 0) {
@@ -82,13 +82,13 @@ public class WordCount extends Configured implements Tool {
 	public int run(String[] args) throws IOException {
 
 		Job job = new Job(getConf());
-		job.setJobName("Word Count");
-		job.setJarByClass(WordCount.class);
+		job.setJobName("MapReduce");
+		job.setJarByClass(MapReduceDriver.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
-		job.setMapperClass(WordCountMapper.class);
+		job.setMapperClass(MapReduceMapper.class);
 		job.setPartitionerClass(SongDataPartitioner.class);
-		job.setReducerClass(WordCountReducer.class);
+		job.setReducerClass(MapReduceReducer.class);
 		job.setNumReduceTasks(2);
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));

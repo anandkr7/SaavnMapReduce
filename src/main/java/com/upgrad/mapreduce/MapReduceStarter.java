@@ -16,7 +16,7 @@ public class MapReduceStarter {
 
 		Map<String, Double> result = TopSongsGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		BufferedWriter writer = new BufferedWriter(
-				new FileWriter(args[1] + "FinalOut44Gb.txt"));
+				new FileWriter(args[1] + "\\" + "FinalOut44Gb.txt"));
 		int index = 0;
 		for (String dateSong : result.keySet()) {
 			index++;

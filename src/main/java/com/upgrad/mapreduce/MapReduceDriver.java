@@ -39,11 +39,8 @@ public class MapReduceDriver extends Configured implements Tool {
 
 			logger.info("Starting the Counting process...");
 			FileHandler fileHandler = new FileHandler();
-			File file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00000");
-			// File file =
-			// fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
+			File file = fileHandler.getFileFromExternalPath(args[1]  + "\\" + "part-r-00000");
 
-			@SuppressWarnings("resource")
 			Map<String, Integer> songsMap = new HashMap<String, Integer>();
 			Scanner scanner = new Scanner(file);
 			while (scanner.hasNext()) {
@@ -53,7 +50,8 @@ public class MapReduceDriver extends Configured implements Tool {
 				}
 			}
 
-			file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00001");
+			file = fileHandler.getFileFromExternalPath(args[1] + "\\" + "part-r-00001");
+			scanner.close();
 			scanner = new Scanner(file);
 			while (scanner.hasNext()) {
 				String songData = scanner.nextLine();
@@ -62,6 +60,7 @@ public class MapReduceDriver extends Configured implements Tool {
 				}
 			}
 
+			scanner.close();
 			logger.info("Creating the Song objects...");
 			songsMap = TestAfterMapReduce.sortByValue(songsMap);
 			for (String string : songsMap.keySet()) {
@@ -82,7 +81,7 @@ public class MapReduceDriver extends Configured implements Tool {
 	public int run(String[] args) throws IOException {
 
 		Job job = new Job(getConf());
-		job.setJobName("MapReduce");
+		job.setJobName("MapReduceDriver");
 		job.setJarByClass(MapReduceDriver.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);

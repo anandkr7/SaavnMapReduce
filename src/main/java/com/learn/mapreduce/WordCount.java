@@ -3,7 +3,11 @@ package com.learn.mapreduce;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,65 +22,36 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.log4j.Logger;
-import com.learn.mapreduce.TestAfterMapReduce;
-import com.upgrad.mapreduce.SongDataPartitioner;
-import com.upgrad.mapreduce.domain.SongDetails;
-import com.upgrad.mapreduce.util.FileHandler;
 
 public class WordCount extends Configured implements Tool {
 
-	private static List<SongDetails> songs = new ArrayList<SongDetails>();
-    private static Logger logger = Logger.getLogger(WordCount.class);
-
-	public static Map<String, List<SongDetails>> startWordCount(String[] args) throws Exception {
-
-		logger.info("Starting the MapReduce program...");
+	public static void main(String[] args) throws Exception {
+		System.out.println("Starting the MapReduce program...");
 		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);
-
-		//		int returnStatus = 0;
+		
 		if (returnStatus == 0) {
-
-			logger.info("Starting the Counting process...");
+			System.out.println("Exitting");
 			FileHandler fileHandler = new FileHandler();
-			File file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00000");
-			// File file =
-			// fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
+			File file = fileHandler.getFileFromExternalPath("/home/anand/Programs/Cloudera/output5/part-r-00000");
 
 			@SuppressWarnings("resource")
-			Map<String, Integer> songsMap = new HashMap<String, Integer>();
 			Scanner scanner = new Scanner(file);
+			List<String> latestBinsDataList = new ArrayList<String>();
+			Map<String, Integer> songsMap = new HashMap<String, Integer>();
+
 			while (scanner.hasNext()) {
-				String songData = scanner.nextLine();
-				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
-					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
-				}
+				String binData = scanner.nextLine();
+				latestBinsDataList.add(binData);
+				songsMap.put(binData.split("\t")[0], Integer.parseInt(binData.split("\t")[1]));
 			}
 
-			file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00001");
-			scanner = new Scanner(file);
-			while (scanner.hasNext()) {
-				String songData = scanner.nextLine();
-				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
-					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
-				}
-			}
-
-			logger.info("Creating the Song objects...");
-			songsMap = TestAfterMapReduce.sortByValue(songsMap);
+			songsMap = sortByValue(songsMap);
 			for (String string : songsMap.keySet()) {
-				SongDetails song = new SongDetails();
-				song.setSongId(string.split("#")[0]);
-				song.setDate(string.split("#")[1]);
-				song.setPlayed(songsMap.get(string));
-				songs.add(song);
+				System.out.println("Key -- " + string + ", Value - " + songsMap.get(string));
 			}
-
-			logger.info("Start finding the Song objects...");
-			return TestAfterMapReduce.findTop100SongsDateWise(songs);
 		} else {
+			System.out.println("Checking..........");
 		}
-		return null;
 	}
 
 	public int run(String[] args) throws IOException {
@@ -87,14 +62,15 @@ public class WordCount extends Configured implements Tool {
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 		job.setMapperClass(WordCountMapper.class);
-		job.setPartitionerClass(SongDataPartitioner.class);
+		job.setCombinerClass(WordCountReducer.class);
 		job.setReducerClass(WordCountReducer.class);
-		job.setNumReduceTasks(2);
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
+		
+		
 		try {
+			System.exit(job.waitForCompletion(true) ? 0 : 1);
 			return job.waitForCompletion(true) ? 0 : 1;
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -103,6 +79,26 @@ public class WordCount extends Configured implements Tool {
 		}
 		return 0;
 
+	}
+
+	// function to sort hashmap by values
+	public static HashMap<String, Integer> sortByValue(Map<String, Integer> songsMap) {
+		// Create a list from elements of HashMap
+		List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(songsMap.entrySet());
+
+		// Sort the list
+		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+			public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+				return (o1.getValue()).compareTo(o2.getValue());
+			}
+		});
+
+		// put data from sorted list to hashmap
+		HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
+		for (Map.Entry<String, Integer> aa : list) {
+			temp.put(aa.getKey(), aa.getValue());
+		}
+		return temp;
 	}
 
 }

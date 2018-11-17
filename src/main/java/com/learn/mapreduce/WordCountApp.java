@@ -13,7 +13,7 @@ public class WordCountApp {
 	public static void main(String[] args) throws Exception {
 
 		long t1 = System.currentTimeMillis();
-		Map<String, List<SongDetails>> dateWiseSongWithCount = WordCount.startWordCount(args);
+		Map<String, List<SongDetails>> dateWiseSongWithCount = null;//WordCount.startWordCount(args);
 
 		Map<String, Double> result = TopSongsGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		BufferedWriter writer = new BufferedWriter(

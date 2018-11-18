@@ -15,4 +15,11 @@ public class CommonUtils {
 		}
 	}
 
+	public static boolean isValidSongId(String data) {
+		if (data != null && !data.equalsIgnoreCase("null") && !data.contains("null")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

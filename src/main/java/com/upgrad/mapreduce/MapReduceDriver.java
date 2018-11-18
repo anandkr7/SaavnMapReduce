@@ -1,12 +1,13 @@
 package com.upgrad.mapreduce;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -22,41 +23,39 @@ import org.apache.log4j.Logger;
 
 import com.learn.mapreduce.TestAfterMapReduce;
 import com.upgrad.mapreduce.domain.SongDetails;
-import com.upgrad.mapreduce.util.FileHandler;
 
 public class MapReduceDriver extends Configured implements Tool {
 
 	private static List<SongDetails> songs = new ArrayList<SongDetails>();
-    private static Logger logger = Logger.getLogger(MapReduceDriver.class);
+	private static Logger logger = Logger.getLogger(MapReduceDriver.class);
 
 	public static Map<String, List<SongDetails>> startWordCount(String[] args) throws Exception {
 
 		logger.info("Starting the MapReduce program...");
 		int returnStatus = ToolRunner.run(new Configuration(), new MapReduceDriver(), args);
 
-		//		int returnStatus = 0;
 		if (returnStatus == 0) {
 
 			logger.info("Starting the Counting process...");
-			FileHandler fileHandler = new FileHandler();
-			File file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00000");
-			// File file =
-			// fileHandler.getFileFromExternalPath("/home/anand/Project/Pig/Saavn/Out1/part-r-00000");
 
-			@SuppressWarnings("resource")
 			Map<String, Integer> songsMap = new HashMap<String, Integer>();
-			Scanner scanner = new Scanner(file);
-			while (scanner.hasNext()) {
-				String songData = scanner.nextLine();
+			
+			String urlString = args[1].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00000";
+			URL url = new URL(urlString);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String songData = line;
 				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
 					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
 				}
 			}
 
-			file = fileHandler.getFileFromExternalPath(args[1] + "part-r-00001");
-			scanner = new Scanner(file);
-			while (scanner.hasNext()) {
-				String songData = scanner.nextLine();
+			urlString = args[1].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00001";
+			url = new URL(urlString);
+			reader = new BufferedReader(new InputStreamReader(url.openStream()));
+			while ((line = reader.readLine()) != null) {
+				String songData = line;
 				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
 					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
 				}
@@ -82,11 +81,12 @@ public class MapReduceDriver extends Configured implements Tool {
 	public int run(String[] args) throws IOException {
 
 		Job job = new Job(getConf());
-		job.setJobName("MapReduce");
+		job.setJobName("MapReduceDriver");
 		job.setJarByClass(MapReduceDriver.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 		job.setMapperClass(MapReduceMapper.class);
+		job.setCombinerClass(MapReduceReducer.class);
 		job.setPartitionerClass(SongDataPartitioner.class);
 		job.setReducerClass(MapReduceReducer.class);
 		job.setNumReduceTasks(2);
@@ -102,7 +102,6 @@ public class MapReduceDriver extends Configured implements Tool {
 			e.printStackTrace();
 		}
 		return 0;
-
 	}
 
 }

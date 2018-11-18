@@ -16,7 +16,7 @@ public class MapReduceStarter {
 
 		Map<String, Double> result = TopSongsGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		BufferedWriter writer = new BufferedWriter(
-				new FileWriter(args[1] + "FinalOut44Gb.txt"));
+				new FileWriter("/tmp/Top100SongResult.csv"));
 		int index = 0;
 		for (String dateSong : result.keySet()) {
 			index++;
@@ -27,7 +27,8 @@ public class MapReduceStarter {
 			}
 		}
 		writer.close();
-		System.out.println("TIME TO COMPLETE - " + (System.currentTimeMillis() - t1)/1000);
+		System.out.println("TIME TO COMPLETE - " + (System.currentTimeMillis() - t1)/1000 + " Seconds");
+		System.exit(1);
 	}
 
 }

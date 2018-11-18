@@ -15,10 +15,19 @@ import org.apache.log4j.Logger;
 import com.upgrad.mapreduce.domain.Song;
 import com.upgrad.mapreduce.util.CommonUtils;
 
+/**
+ * @author Anand
+ * 
+ *         Processor Main Class for processing the MapReduce output and generate
+ *         the Top hundred songs
+ *
+ */
 public class TopHundredSongsGenerator {
 
 	private static Logger logger = Logger.getLogger(TopHundredSongsGenerator.class);
 
+	// Method to Start the Mean, SD, ZScore calculation and generation of the Top
+	// Hundred songs
 	public static void main(String[] args) throws Exception {
 
 		long t1 = System.currentTimeMillis();
@@ -30,7 +39,6 @@ public class TopHundredSongsGenerator {
 		Map<String, Integer> songsMap = new HashMap<String, Integer>();
 
 		String urlString1 = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00001";
-		//String urlString1 = "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out44gb/part-r-00001";
 		URL url1 = new URL(urlString1);
 		String line1;
 		BufferedReader reader1 = new BufferedReader(new InputStreamReader(url1.openStream()));
@@ -53,10 +61,13 @@ public class TopHundredSongsGenerator {
 				songs.add(song);
 		}
 
-		logger.info("Start finding the Song objects...");
+		logger.info("Generating the Song And Date wise map...");
 		dateWiseSongWithCount = SongsScoreGenerator.generateSongsAndDateWiseMap(songs);
+
+		logger.info("Generating the Top Hundred Songs by using ZScore...");
 		Map<String, Double> result = SongsScoreGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 
+		logger.info("Starting to write to the files...");
 		BufferedWriter writer25 = new BufferedWriter(new FileWriter(args[1] + "25.txt"));
 		BufferedWriter writer26 = new BufferedWriter(new FileWriter(args[1] + "26.txt"));
 		BufferedWriter writer27 = new BufferedWriter(new FileWriter(args[1] + "27.txt"));

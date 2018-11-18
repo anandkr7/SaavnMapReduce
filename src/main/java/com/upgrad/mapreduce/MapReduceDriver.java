@@ -15,10 +15,17 @@ import org.apache.log4j.Logger;
 
 import com.upgrad.mapreduce.domain.SongTextWritable;
 
+/**
+ * @author Anand
+ * 
+ *         Driver Class to start the Mapper and Reducer process
+ *
+ */
 public class MapReduceDriver extends Configured implements Tool {
 
 	private static Logger logger = Logger.getLogger(MapReduceDriver.class);
 
+	// Main method for the MapReduce process
 	public static void main(String[] args) throws Exception {
 
 		logger.info("Starting the MapReduce program...");
@@ -27,6 +34,7 @@ public class MapReduceDriver extends Configured implements Tool {
 		logger.info("End of MapReduce program...");
 	}
 
+	// Configuration method for the MapReduce process
 	@SuppressWarnings("deprecation")
 	public int run(String[] args) throws IOException {
 
@@ -35,10 +43,10 @@ public class MapReduceDriver extends Configured implements Tool {
 		job.setJarByClass(MapReduceDriver.class);
 		job.setOutputKeyClass(SongTextWritable.class);
 		job.setOutputValueClass(IntWritable.class);
-		
+
 		job.setMapOutputKeyClass(SongTextWritable.class);
 		job.setMapOutputValueClass(IntWritable.class);
-		
+
 		job.setMapperClass(MapReduceMapper.class);
 		job.setPartitionerClass(SongDataPartitioner.class);
 		job.setReducerClass(MapReduceReducer.class);

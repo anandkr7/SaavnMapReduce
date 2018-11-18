@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
 
-import com.upgrad.mapreduce.TopSongsGenerator;
+import com.upgrad.mapreduce.SongsScoreGenerator;
 import com.upgrad.mapreduce.domain.SongDetails;
 
 public class WordCountApp {
@@ -15,7 +15,7 @@ public class WordCountApp {
 		long t1 = System.currentTimeMillis();
 		Map<String, List<SongDetails>> dateWiseSongWithCount = WordCount.startWordCount(args);
 
-		Map<String, Double> result = TopSongsGenerator.generateTopHundredSongs(dateWiseSongWithCount);
+		Map<String, Double> result = SongsScoreGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		BufferedWriter writer = new BufferedWriter(
 				new FileWriter(args[1] + "FinalOut44Gb.txt"));
 		int index = 0;

@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.upgrad.mapreduce.domain.SongDetails;
 
-public class TopSongsGenerator {
+public class SongsScoreGenerator {
 
 	public static Map<String, Double> generateTopHundredSongs(Map<String, List<SongDetails>> dateWiseSongWithCount) {
 
@@ -64,11 +64,11 @@ public class TopSongsGenerator {
 			Map<String, Integer> dateWiseMeanValue) {
 
 		Map<String, Double> dateSDMeanValue = new HashMap<String, Double>();
+		
 		for (String dateStr : dateWiseSongWithCount.keySet()) {
 			List<SongDetails> songs = dateWiseSongWithCount.get(dateStr);
 			BigInteger totalSquareValue = BigInteger.valueOf(0);
 			int noOfSongs = songs.size();
-
 			for (SongDetails songDetails : songs) {
 
 				Integer mean = dateWiseMeanValue.get(dateStr);

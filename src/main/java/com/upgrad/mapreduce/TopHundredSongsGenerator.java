@@ -2,6 +2,7 @@ package com.upgrad.mapreduce;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -9,11 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
 import com.upgrad.mapreduce.domain.Song;
 import com.upgrad.mapreduce.util.CommonUtils;
+import com.upgrad.mapreduce.util.FileHandler;
 
 /**
  * @author Anand
@@ -38,14 +41,31 @@ public class TopHundredSongsGenerator {
 		logger.info("Starting the Counting process...");
 		Map<String, Integer> songsMap = new HashMap<String, Integer>();
 
-		String urlString1 = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00001";
-		URL url1 = new URL(urlString1);
-		String line1;
-		BufferedReader reader1 = new BufferedReader(new InputStreamReader(url1.openStream()));
-		while ((line1 = reader1.readLine()) != null) {
-			String songData = line1;
-			if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
-				songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
+		if (args[0].contains("s3a") || args[0].contains("https://s3")) {
+			String urlString1 = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/")
+					+ "part-r-00001";
+			URL url1 = new URL(urlString1);
+			String line1;
+			BufferedReader reader1 = new BufferedReader(new InputStreamReader(url1.openStream()));
+			while ((line1 = reader1.readLine()) != null) {
+				String songData = line1;
+				if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
+					songsMap.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
+				}
+			}
+		} else {
+			FileHandler fileHandler = new FileHandler();
+			File file = fileHandler.getFileFromExternalPath(args[0] + "part-r-00001");
+
+			@SuppressWarnings("resource")
+			Scanner scanner = new Scanner(file);
+			List<String> latestBinsDataList = new ArrayList<String>();
+			songsMap = new HashMap<String, Integer>();
+
+			while (scanner.hasNext()) {
+				String binData = scanner.nextLine();
+				latestBinsDataList.add(binData);
+				songsMap.put(binData.split("\t")[0], Integer.parseInt(binData.split("\t")[1]));
 			}
 		}
 

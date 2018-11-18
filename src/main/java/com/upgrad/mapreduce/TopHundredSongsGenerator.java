@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.learn.mapreduce.TestAfterMapReduce;
-import com.upgrad.mapreduce.domain.SongDetails;
+import com.upgrad.mapreduce.domain.Song;
 
 public class TopHundredSongsGenerator {
 
@@ -23,14 +23,15 @@ public class TopHundredSongsGenerator {
 
 		long t1 = System.currentTimeMillis();
 
-		Map<String, List<SongDetails>> dateWiseSongWithCount = new HashMap<String, List<SongDetails>>();
-		List<SongDetails> songs = new ArrayList<SongDetails>();
+		Map<String, List<Song>> dateWiseSongWithCount = new HashMap<String, List<Song>>();
+		List<Song> songs = new ArrayList<Song>();
 
 		logger.info("Starting the Counting process...");
 		Map<String, Integer> preProcessData = new HashMap<String, Integer>();
 		Map<String, Integer> songsMap = new HashMap<String, Integer>();
 
-		String urlString = args[1].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00000";
+		String urlString = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00000";
+		//urlString = "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00000";
 		URL url = new URL(urlString);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 		String line;
@@ -41,7 +42,8 @@ public class TopHundredSongsGenerator {
 			}
 		}
 
-		String urlString1 = args[1].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00001";
+		String urlString1 = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00001";
+		//urlString1 = "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00001";
 		URL url1 = new URL(urlString1);
 		String line1;
 		BufferedReader reader1 = new BufferedReader(new InputStreamReader(url1.openStream()));
@@ -55,11 +57,13 @@ public class TopHundredSongsGenerator {
 		logger.info("Creating the Song objects...");
 		songsMap = TestAfterMapReduce.sortByValue(songsMap);
 		for (String string : songsMap.keySet()) {
-			SongDetails song = new SongDetails();
-			song.setSongId(string.split("#")[0]);
-			song.setDate(string.split("#")[1]);
+			Song song = new Song();
+			song.setSongId(string.split(",")[0]);
+			song.setDate(string.split(",")[1]);
 			song.setPlayed(songsMap.get(string));
-			songs.add(song);
+			
+			if(song.getDate().contains("2017"))
+				songs.add(song);
 		}
 
 		logger.info("Start finding the Song objects...");
@@ -67,7 +71,7 @@ public class TopHundredSongsGenerator {
 		Map<String, Double> result = SongsScoreGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		
 		BufferedWriter writer = new BufferedWriter(
-				new FileWriter("E:\\Project\\SaavnProject\\Out2\\Top100SongResult.csv"));
+				new FileWriter(args[1] + "Top100SongResult.csv"));
 		int index = 0;
 		for (String dateSong : result.keySet()) {
 			index++;

@@ -21,15 +21,15 @@ import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 import com.learn.mapreduce.TestAfterMapReduce;
 import com.upgrad.mapreduce.SongDataPartitioner;
-import com.upgrad.mapreduce.domain.SongDetails;
+import com.upgrad.mapreduce.domain.Song;
 import com.upgrad.mapreduce.util.FileHandler;
 
 public class WordCount extends Configured implements Tool {
 
-	private static List<SongDetails> songs = new ArrayList<SongDetails>();
+	private static List<Song> songs = new ArrayList<Song>();
     private static Logger logger = Logger.getLogger(WordCount.class);
 
-	public static Map<String, List<SongDetails>> startWordCount(String[] args) throws Exception {
+	public static Map<String, List<Song>> startWordCount(String[] args) throws Exception {
 
 		logger.info("Starting the MapReduce program...");
 		int returnStatus = ToolRunner.run(new Configuration(), new WordCount(), args);
@@ -65,7 +65,7 @@ public class WordCount extends Configured implements Tool {
 			logger.info("Creating the Song objects...");
 			songsMap = TestAfterMapReduce.sortByValue(songsMap);
 			for (String string : songsMap.keySet()) {
-				SongDetails song = new SongDetails();
+				Song song = new Song();
 				song.setSongId(string.split("#")[0]);
 				song.setDate(string.split("#")[1]);
 				song.setPlayed(songsMap.get(string));

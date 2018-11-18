@@ -9,29 +9,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.upgrad.mapreduce.domain.SongDetails;
+import com.upgrad.mapreduce.domain.Song;
 
 public class TestAfterMapReduce {
 
-	public static Map<String, List<SongDetails>> findTop100SongsDateWise(List<SongDetails> songsList) {
+	public static Map<String, List<Song>> findTop100SongsDateWise(List<Song> songsList) {
 
-		Map<String, List<SongDetails>> dateWiseSongList = new LinkedHashMap<String, List<SongDetails>>();
+		Map<String, List<Song>> dateWiseSongList = new LinkedHashMap<String, List<Song>>();
 		System.out.println("Creating the Datewise map...");
 
-		for (SongDetails songDetails : songsList) {
+		for (Song songDetails : songsList) {
 			if (songDetails.getPlayed() > 0) {
 				if (dateWiseSongList.containsKey(songDetails.getDate())) {
-					List<SongDetails> songList = dateWiseSongList.get(songDetails.getDate());
+					List<Song> songList = dateWiseSongList.get(songDetails.getDate());
 					if (songList != null) {
 						songList.add(songDetails);
 						dateWiseSongList.put(songDetails.getDate(), songList);
 					} else {
-						List<SongDetails> newSongList = new ArrayList<SongDetails>();
+						List<Song> newSongList = new ArrayList<Song>();
 						newSongList.add(songDetails);
 						dateWiseSongList.put(songDetails.getDate(), newSongList);
 					}
 				} else {
-					List<SongDetails> newSongList = new ArrayList<SongDetails>();
+					List<Song> newSongList = new ArrayList<Song>();
 					newSongList.add(songDetails);
 					dateWiseSongList.put(songDetails.getDate(), newSongList);
 				}

@@ -7,13 +7,22 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class MapReduceMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+import com.upgrad.mapreduce.domain.SongTextWritable;
+
+public class MapReduceMapper extends Mapper<LongWritable, Text, SongTextWritable, IntWritable> {
 	
 	@Override
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+		
+		SongTextWritable song = new SongTextWritable();
+		
 		String st[] = value.toString().split(",");
-		String keyValue = st[0].trim() + "#"+ st[4].trim();
-		context.write(new Text(keyValue), new IntWritable(1));
-
+		String songId = st[0].trim();
+		String date = st[4].trim();
+		
+		song.setSongId(new Text(songId));
+		song.setDate(new Text(date));
+		context.write(song, new IntWritable(1));
+		
 	}
 }

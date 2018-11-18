@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.upgrad.mapreduce.SongsScoreGenerator;
-import com.upgrad.mapreduce.domain.SongDetails;
+import com.upgrad.mapreduce.domain.Song;
 
 public class WordCountApp {
 
 	public static void main(String[] args) throws Exception {
 
 		long t1 = System.currentTimeMillis();
-		Map<String, List<SongDetails>> dateWiseSongWithCount = WordCount.startWordCount(args);
+		Map<String, List<Song>> dateWiseSongWithCount = WordCount.startWordCount(args);
 
 		Map<String, Double> result = SongsScoreGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 		BufferedWriter writer = new BufferedWriter(

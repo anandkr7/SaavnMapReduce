@@ -1,6 +1,6 @@
 package com.upgrad.mapreduce.domain;
 
-public class SongDetails {
+public class Song {
 
 	private String songId;
 	private String date;

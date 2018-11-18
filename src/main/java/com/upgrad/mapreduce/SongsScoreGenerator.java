@@ -10,14 +10,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.upgrad.mapreduce.domain.Song;
 
 public class SongsScoreGenerator {
-
+	private static Logger logger = Logger.getLogger(SongsScoreGenerator.class);
 	public static Map<String, List<Song>> generateSongsAndDateWiseMap(List<Song> songsList) {
 
 		Map<String, List<Song>> dateWiseSongList = new LinkedHashMap<String, List<Song>>();
-		System.out.println("Creating the Datewise map...");
+		logger.info("Creating the Datewise map...");
 
 		for (Song songDetails : songsList) {
 			if (songDetails.getPlayed() > 0) {
@@ -122,7 +124,7 @@ public class SongsScoreGenerator {
 				totalSquareValue = totalSquareValue.add(valSquare);
 			}
 
-			System.out.println("Date - " + dateStr + " Size - " + noOfSongs);
+			logger.info("Date - " + dateStr + " Size - " + noOfSongs);
 			BigInteger dividedVal = totalSquareValue.divide(BigInteger.valueOf(noOfSongs - 1));
 			BigInteger temp = new BigInteger(sqrt(dividedVal).toString());
 			dateSDMeanValue.put(dateStr, temp.doubleValue());

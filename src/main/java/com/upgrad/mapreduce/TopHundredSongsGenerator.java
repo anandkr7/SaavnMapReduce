@@ -13,10 +13,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.upgrad.mapreduce.domain.Song;
+import com.upgrad.mapreduce.util.CommonUtils;
 
 public class TopHundredSongsGenerator {
 
-	private static Logger logger = Logger.getLogger(MapReduceDriver.class);
+	private static Logger logger = Logger.getLogger(TopHundredSongsGenerator.class);
 
 	public static void main(String[] args) throws Exception {
 
@@ -26,25 +27,10 @@ public class TopHundredSongsGenerator {
 		List<Song> songs = new ArrayList<Song>();
 
 		logger.info("Starting the Counting process...");
-		Map<String, Integer> preProcessData = new HashMap<String, Integer>();
 		Map<String, Integer> songsMap = new HashMap<String, Integer>();
 
-		String urlString = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00000";
-		// urlString =
-		// "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00000";
-		URL url = new URL(urlString);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			String songData = line;
-			if (songData != null && !songData.contains("null") && songData.split("\t").length == 2) {
-				preProcessData.put(songData.split("\t")[0], Integer.parseInt(songData.split("\t")[1]));
-			}
-		}
-
 		String urlString1 = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00001";
-		// urlString1 =
-		// "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00001";
+		//String urlString1 = "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out44gb/part-r-00001";
 		URL url1 = new URL(urlString1);
 		String line1;
 		BufferedReader reader1 = new BufferedReader(new InputStreamReader(url1.openStream()));
@@ -63,7 +49,7 @@ public class TopHundredSongsGenerator {
 			song.setDate(string.split(",")[1]);
 			song.setPlayed(songsMap.get(string));
 
-			if (song.getDate().contains("2017"))
+			if (CommonUtils.isValidDate(song.getDate()))
 				songs.add(song);
 		}
 
@@ -71,17 +57,48 @@ public class TopHundredSongsGenerator {
 		dateWiseSongWithCount = SongsScoreGenerator.generateSongsAndDateWiseMap(songs);
 		Map<String, Double> result = SongsScoreGenerator.generateTopHundredSongs(dateWiseSongWithCount);
 
-		BufferedWriter writer = new BufferedWriter(new FileWriter(args[1] + "Top100SongResult.csv"));
+		BufferedWriter writer25 = new BufferedWriter(new FileWriter(args[1] + "25.txt"));
+		BufferedWriter writer26 = new BufferedWriter(new FileWriter(args[1] + "26.txt"));
+		BufferedWriter writer27 = new BufferedWriter(new FileWriter(args[1] + "27.txt"));
+		BufferedWriter writer28 = new BufferedWriter(new FileWriter(args[1] + "28.txt"));
+		BufferedWriter writer29 = new BufferedWriter(new FileWriter(args[1] + "29.txt"));
+		BufferedWriter writer30 = new BufferedWriter(new FileWriter(args[1] + "30.txt"));
+		BufferedWriter writer31 = new BufferedWriter(new FileWriter(args[1] + "31.txt"));
+
 		int index = 0;
+		BufferedWriter writer = null;
 		for (String dateSong : result.keySet()) {
 			index++;
+
+			if (dateSong.split("#")[0].contains("2017-12-25")) {
+				writer = writer25;
+			} else if (dateSong.split("#")[0].contains("2017-12-26")) {
+				writer = writer26;
+			} else if (dateSong.split("#")[0].contains("2017-12-27")) {
+				writer = writer27;
+			} else if (dateSong.split("#")[0].contains("2017-12-28")) {
+				writer = writer28;
+			} else if (dateSong.split("#")[0].contains("2017-12-29")) {
+				writer = writer29;
+			} else if (dateSong.split("#")[0].contains("2017-12-30")) {
+				writer = writer30;
+			} else if (dateSong.split("#")[0].contains("2017-12-31")) {
+				writer = writer31;
+			}
+
 			writer.write(dateSong.split("#")[1] + "," + index + "," + dateSong.split("#")[0] + "\n");
 			if (index == 100) {
 				index = 0;
 			}
 		}
-		writer.close();
-		System.out.println("TIME TO COMPLETE - " + (System.currentTimeMillis() - t1) / 1000 + " Seconds");
+		writer25.close();
+		writer26.close();
+		writer27.close();
+		writer28.close();
+		writer29.close();
+		writer30.close();
+		writer31.close();
+		logger.info("TIME TO COMPLETE - " + (System.currentTimeMillis() - t1) / 1000 + " Seconds");
 		System.exit(1);
 	}
 

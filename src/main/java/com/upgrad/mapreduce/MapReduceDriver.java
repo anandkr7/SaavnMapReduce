@@ -27,10 +27,11 @@ public class MapReduceDriver extends Configured implements Tool {
 		logger.info("End of MapReduce program...");
 	}
 
+	@SuppressWarnings("deprecation")
 	public int run(String[] args) throws IOException {
 
 		Job job = new Job(getConf());
-		job.setJobName("MapReduce");
+		job.setJobName("MapReduceDriver");
 		job.setJarByClass(MapReduceDriver.class);
 		job.setOutputKeyClass(SongTextWritable.class);
 		job.setOutputValueClass(IntWritable.class);

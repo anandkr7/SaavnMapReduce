@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.learn.mapreduce.TestAfterMapReduce;
 import com.upgrad.mapreduce.domain.Song;
 
 public class TopHundredSongsGenerator {
@@ -31,7 +30,8 @@ public class TopHundredSongsGenerator {
 		Map<String, Integer> songsMap = new HashMap<String, Integer>();
 
 		String urlString = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00000";
-		//urlString = "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00000";
+		// urlString =
+		// "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00000";
 		URL url = new URL(urlString);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
 		String line;
@@ -43,7 +43,8 @@ public class TopHundredSongsGenerator {
 		}
 
 		String urlString1 = args[0].replace("//", "/").replace("s3a:", "https://s3.amazonaws.com/") + "part-r-00001";
-		//urlString1 = "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00001";
+		// urlString1 =
+		// "https://s3.amazonaws.com/anandkr7bucket/Saavn_Output/out1/part-r-00001";
 		URL url1 = new URL(urlString1);
 		String line1;
 		BufferedReader reader1 = new BufferedReader(new InputStreamReader(url1.openStream()));
@@ -55,23 +56,22 @@ public class TopHundredSongsGenerator {
 		}
 
 		logger.info("Creating the Song objects...");
-		songsMap = TestAfterMapReduce.sortByValue(songsMap);
+		songsMap = SongsScoreGenerator.sortByValue(songsMap);
 		for (String string : songsMap.keySet()) {
 			Song song = new Song();
 			song.setSongId(string.split(",")[0]);
 			song.setDate(string.split(",")[1]);
 			song.setPlayed(songsMap.get(string));
-			
-			if(song.getDate().contains("2017"))
+
+			if (song.getDate().contains("2017"))
 				songs.add(song);
 		}
 
 		logger.info("Start finding the Song objects...");
-		dateWiseSongWithCount = TestAfterMapReduce.findTop100SongsDateWise(songs);
+		dateWiseSongWithCount = SongsScoreGenerator.generateSongsAndDateWiseMap(songs);
 		Map<String, Double> result = SongsScoreGenerator.generateTopHundredSongs(dateWiseSongWithCount);
-		
-		BufferedWriter writer = new BufferedWriter(
-				new FileWriter(args[1] + "Top100SongResult.csv"));
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(args[1] + "Top100SongResult.csv"));
 		int index = 0;
 		for (String dateSong : result.keySet()) {
 			index++;

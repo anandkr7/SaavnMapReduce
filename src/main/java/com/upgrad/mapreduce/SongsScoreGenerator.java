@@ -3,14 +3,58 @@ package com.upgrad.mapreduce;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.upgrad.mapreduce.domain.Song;
 
 public class SongsScoreGenerator {
+
+	public static Map<String, List<Song>> generateSongsAndDateWiseMap(List<Song> songsList) {
+
+		Map<String, List<Song>> dateWiseSongList = new LinkedHashMap<String, List<Song>>();
+		System.out.println("Creating the Datewise map...");
+
+		for (Song songDetails : songsList) {
+			if (songDetails.getPlayed() > 0) {
+				if (dateWiseSongList.containsKey(songDetails.getDate())) {
+					List<Song> songList = dateWiseSongList.get(songDetails.getDate());
+					if (songList != null) {
+						songList.add(songDetails);
+						dateWiseSongList.put(songDetails.getDate(), songList);
+					} else {
+						List<Song> newSongList = new ArrayList<Song>();
+						newSongList.add(songDetails);
+						dateWiseSongList.put(songDetails.getDate(), newSongList);
+					}
+				} else {
+					List<Song> newSongList = new ArrayList<Song>();
+					newSongList.add(songDetails);
+					dateWiseSongList.put(songDetails.getDate(), newSongList);
+				}
+			}
+		}
+		return dateWiseSongList;
+	}
+
+	public static HashMap<String, Integer> sortByValue(Map<String, Integer> songsMap) {
+		List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(songsMap.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+			public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+				return (o1.getValue()).compareTo(o2.getValue());
+			}
+		});
+
+		HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
+		for (Map.Entry<String, Integer> aa : list) {
+			temp.put(aa.getKey(), aa.getValue());
+		}
+		return temp;
+	}
 
 	public static Map<String, Double> generateTopHundredSongs(Map<String, List<Song>> dateWiseSongWithCount) {
 
@@ -22,13 +66,13 @@ public class SongsScoreGenerator {
 		Map<String, Double> dateWiseSDValue = new HashMap<String, Double>();
 		dateWiseSDValue = getSDValueForDate(dateWiseSongWithCount, dateWiseMeanValue);
 
-		Map<String, List<Song>> dateWiseSongWithZScore = calculateZScoreFor(dateWiseSongWithCount,
-				dateWiseMeanValue, dateWiseSDValue);
+		Map<String, List<Song>> dateWiseSongWithZScore = calculateZScoreFor(dateWiseSongWithCount, dateWiseMeanValue,
+				dateWiseSDValue);
 		Map<String, Double> result = new LinkedHashMap<String, Double>();
 		for (String dateStr : dateWiseSongWithZScore.keySet()) {
 			List<Song> songs = dateWiseSongWithZScore.get(dateStr);
 			List<Song> topHundredSongs = null;
-			if(songs.size() > 100){
+			if (songs.size() > 100) {
 				topHundredSongs = songs.subList(songs.size() - 101, songs.size() - 1);
 			} else {
 				topHundredSongs = songs;
@@ -64,7 +108,7 @@ public class SongsScoreGenerator {
 			Map<String, Integer> dateWiseMeanValue) {
 
 		Map<String, Double> dateSDMeanValue = new HashMap<String, Double>();
-		
+
 		for (String dateStr : dateWiseSongWithCount.keySet()) {
 			List<Song> songs = dateWiseSongWithCount.get(dateStr);
 			BigInteger totalSquareValue = BigInteger.valueOf(0);
@@ -77,7 +121,7 @@ public class SongsScoreGenerator {
 				BigInteger valSquare = BigInteger.valueOf(val * val);
 				totalSquareValue = totalSquareValue.add(valSquare);
 			}
-			
+
 			System.out.println("Date - " + dateStr + " Size - " + noOfSongs);
 			BigInteger dividedVal = totalSquareValue.divide(BigInteger.valueOf(noOfSongs - 1));
 			BigInteger temp = new BigInteger(sqrt(dividedVal).toString());
@@ -87,9 +131,8 @@ public class SongsScoreGenerator {
 		return dateSDMeanValue;
 	}
 
-	public static Map<String, List<Song>> calculateZScoreFor(
-			Map<String, List<Song>> dateWiseSongWithCount, Map<String, Integer> dateWiseMeanValue,
-			Map<String, Double> dateSDMeanValue) {
+	public static Map<String, List<Song>> calculateZScoreFor(Map<String, List<Song>> dateWiseSongWithCount,
+			Map<String, Integer> dateWiseMeanValue, Map<String, Double> dateSDMeanValue) {
 
 		Map<String, List<Song>> updatedDateWiseSongWithCount = new HashMap<String, List<Song>>();
 		for (String dateStr : dateWiseSongWithCount.keySet()) {

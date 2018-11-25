@@ -14,5 +14,15 @@ public class BasicTest {
 		Assert.assertTrue("Invalid sum", (first + second) == 3);
 
 	}
+	
+	@Test
+	public void testMinus() {
+
+		int first = 1;
+		int second = 2;
+
+		Assert.assertTrue("Invalid sum", (second - first) == 1);
+
+	}
 
 }
